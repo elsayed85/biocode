@@ -19,15 +19,18 @@
 	<link type="text/css" rel="stylesheet" href="css/style.css" />
 
 	<style>
-		#myVideo
-{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+		#myVideo {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.alert-message {
+			color: red;
+		}
 	</style>
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -41,7 +44,7 @@
 
 <body>
 	<video autoplay muted loop id="myVideo">
-		<source src="./img/Dna-1.mp4" type="video/mp4">
+		<source src="./img/dna.mp4" type="video/mp4">
 	</video>
 	<div id="booking" class="section">
 		<div class="section-center">
@@ -49,75 +52,48 @@
 				<div class="row">
 					<div class="col-md-7 col-md-push-5">
 						<div class="booking-cta">
-							<h1>Make your reservation</h1>
-							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi facere, soluta magnam consectetur molestias itaque
-								ad sint fugit architecto incidunt iste culpa perspiciatis possimus voluptates aliquid consequuntur cumque quasi.
-								Perspiciatis.
+							<h1>Get Ticket</h1>
+							<p class="lead">
+								Want to Join Us in our Event ? <br>
+								only mansoura university get <b>free</b> tickets , others get paid tickets (40 EGP) ,
+								you can pay via vodaphone cash
 							</p>
 						</div>
 					</div>
 
 
 
-					
+
 					<div class="col-md-4 col-md-pull-7">
 						<div class="booking-form">
-							<form>
+							<form id="bicode_form">
 								<div class="form-group">
-									<span class="form-label">Your Destination</span>
-									<input class="form-control" type="text" placeholder="Enter a destination or hotel name">
+									<span class="form-label">Full Name</span>
+									<input required class="form-control" name="name" type="text"
+										placeholder="Enter Your Full Name">
+									<div class="alert-message" id="nameError"></div>
 								</div>
-								<div class="row">
-									<div class="col-sm-6">
-										<div class="form-group">
-											<span class="form-label">Check In</span>
-											<input class="form-control" type="date" required>
-										</div>
-									</div>
-									<div class="col-sm-6">
-										<div class="form-group">
-											<span class="form-label">Check out</span>
-											<input class="form-control" type="date" required>
-										</div>
-									</div>
+								<div class="form-group">
+									<span class="form-label">Email</span>
+									<input required class="form-control" name="email" type="email"
+										placeholder="Enter Your Email">
+									<div class="alert-message" id="emailError"></div>
 								</div>
-								<div class="row">
-									<div class="col-sm-4">
-										<div class="form-group">
-											<span class="form-label">Rooms</span>
-											<select class="form-control">
-												<option>1</option>
-												<option>2</option>
-												<option>3</option>
-											</select>
-											<span class="select-arrow"></span>
-										</div>
-									</div>
-									<div class="col-sm-4">
-										<div class="form-group">
-											<span class="form-label">Adults</span>
-											<select class="form-control">
-												<option>1</option>
-												<option>2</option>
-												<option>3</option>
-											</select>
-											<span class="select-arrow"></span>
-										</div>
-									</div>
-									<div class="col-sm-4">
-										<div class="form-group">
-											<span class="form-label">Children</span>
-											<select class="form-control">
-												<option>0</option>
-												<option>1</option>
-												<option>2</option>
-											</select>
-											<span class="select-arrow"></span>
-										</div>
-									</div>
+								<div class="form-group">
+									<span class="form-label">Phone</span>
+									<input required class="form-control" name="phone" type="text"
+										placeholder="Enter Your phone">
+									<div class="alert-message" id="phoneError"></div>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" name="from_mansoura_university" type="checkbox"
+										value="1" id="defaultCheck1">
+									<label class="form-check-label" for="defaultCheck1">
+										Are You Student at Mansoura university ?
+									</label>
 								</div>
 								<div class="form-btn">
-									<button class="submit-btn">Check availability</button>
+									<button class="submit-btn">Register</button>
 								</div>
 							</form>
 						</div>
@@ -126,6 +102,53 @@
 			</div>
 		</div>
 	</div>
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+	<script>
+		$(document).ready(function () {
+			function resetInputs() {
+				$('#nameError').text("");
+				$('#emailError').text("");
+				$('#phoneError').text("");
+			}
+			$('#bicode_form').on('submit', function (e) {
+				e.preventDefault();
+				var form = $(this);
+				$.ajax({
+					url: "https://erada-soft.com/sdc/public/api/v1/biocode/messages",
+					method: "post",
+					data: form.serialize(),
+					success: function (response) {
+						resetInputs()
+						if (response.success == false) {
+							Swal.fire({
+								icon: 'info',
+								title: 'أسفون .. ',
+								text: response.message,
+								width: '800px'
+							})
+						} else if (response.success == true) {
+							Swal.fire({
+								icon: 'success',
+								title: 'تم التسجيل بنجاح',
+								text: response.message,
+							})
+							$(this).trigger("reset");
+						}
+					}, error: function (response) {
+						resetInputs();
+						var errors = response.responseJSON.data.messages;
+						$('#nameError').text(errors.name);
+						$('#emailError').text(errors.email);
+						$('#phoneError').text(errors.phone);
+					}
+				});
+				// Prevents default submission of the form after clicking on the submit button.
+				return false;
+			});
+		});
+
+	</script>
+</body>=
 
 </html>
