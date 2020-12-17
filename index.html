@@ -132,11 +132,12 @@
 							Swal.fire({
 								icon: 'success',
 								title: 'تم التسجيل بنجاح',
-								html:`بيانات تذكرتك : 
+								html:`
+								: بيانات تذكرتك  
 								<br> 
-								الرقم التعريفي (id) : ` + ticket.id +
+								: الرقم التعريفي (id)  ` + ticket.id +
 								`<br> 
-								السعر : ` + ticket.price ,
+								: السعر ` + ticket.price ,
 								text: response.message,
 							})
 							$(this).trigger("reset");
