@@ -128,9 +128,15 @@
 								width: '800px'
 							})
 						} else if (response.success == true) {
+							var ticket = response.ticket;
 							Swal.fire({
 								icon: 'success',
 								title: 'تم التسجيل بنجاح',
+								html:`بيانات تذكرتك : 
+								<br> 
+								id : ` + ticket.id +
+								`<br> 
+								price : ` + ticket.price ,
 								text: response.message,
 							})
 							$(this).trigger("reset");
